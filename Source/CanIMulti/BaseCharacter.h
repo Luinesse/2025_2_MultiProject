@@ -55,4 +55,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* MoveAction;
+
+private:
+	bool isServer = false;
 };

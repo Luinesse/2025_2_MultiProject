@@ -54,16 +54,21 @@ void ABaseCharacter::OpenLobby()
 	UWorld* World = GetWorld();
 	if (World) {
 		World->ServerTravel(TEXT("/Game/Level/Lobby?listen"));
+		isServer = true;
 	}
 }
 
 void ABaseCharacter::CallOpenLevel(const FString& Address)
 {
+	if (isServer)	return;
+
 	UGameplayStatics::OpenLevel(this, FName(*Address));
 }
 
 void ABaseCharacter::CallClinetTravel(const FString& Address)
 {
+	if (isServer)	return;
+
 	APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
 	if (PlayerController) {
 		PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
