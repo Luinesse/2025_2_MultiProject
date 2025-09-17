@@ -53,7 +53,7 @@ void ABaseCharacter::OpenLobby()
 {
 	UWorld* World = GetWorld();
 	if (World) {
-		World->ServerTravel(TEXT("/Game/Level/Lobby?listen"));
+		World->ServerTravel(TEXT("/Game/Level/Main?listen"));
 		isServer = true;
 	}
 }
