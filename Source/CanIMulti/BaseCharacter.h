@@ -10,6 +10,9 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionInstance;
 
+class UCameraComponent;
+class USpringArmComponent;
+
 UCLASS()
 class CANIMULTI_API ABaseCharacter : public ACharacter
 {
@@ -42,7 +45,8 @@ public:
 
 	void Move(const FInputActionInstance& Instance);
 	void Look(const FInputActionInstance& Instance);
-
+	void Attack(const FInputActionInstance& Instance);
+	void AttackComplete();
 public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
@@ -56,6 +60,19 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* MoveAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* AttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	bool IsAttack = false;
+
 private:
 	bool isServer = false;
+
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* CameraComp;
+
+	UPROPERTY(EditAnywhere)
+	USpringArmComponent* SpringArmComp;
+
 };

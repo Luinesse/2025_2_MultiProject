@@ -5,13 +5,20 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArmComp->SetupAttachment(RootComponent);
 
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	CameraComp->SetupAttachment(SpringArmComp);
 }
 
 // Called when the game starts or when spawned
@@ -46,6 +53,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		Input->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Move);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Look);
+		Input->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Attack);
 	}
 }
 
@@ -98,5 +106,15 @@ void ABaseCharacter::Look(const FInputActionInstance& Instance)
 		AddControllerYawInput(LookVector.X);
 		AddControllerPitchInput(LookVector.Y);
 	}
+}
+
+void ABaseCharacter::Attack(const FInputActionInstance& Instance)
+{
+	IsAttack = true;
+}
+
+void ABaseCharacter::AttackComplete()
+{
+	IsAttack = false;
 }
 
