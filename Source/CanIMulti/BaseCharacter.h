@@ -47,6 +47,14 @@ public:
 	void Look(const FInputActionInstance& Instance);
 	void Attack(const FInputActionInstance& Instance);
 	void AttackComplete();
+
+	UFUNCTION(Server, Reliable)
+	void Server_AttackComplete();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Attack();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
@@ -63,8 +71,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* AttackAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	UPROPERTY(BlueprintReadWrite, Replicated, Category = "Attack")
 	bool IsAttack = false;
+
 
 private:
 	bool isServer = false;

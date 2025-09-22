@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -110,11 +111,33 @@ void ABaseCharacter::Look(const FInputActionInstance& Instance)
 
 void ABaseCharacter::Attack(const FInputActionInstance& Instance)
 {
-	IsAttack = true;
+	if (!IsLocallyControlled()) {
+		return;
+	}
+
+	if (!IsAttack) {
+		Server_Attack();
+	}
 }
 
-void ABaseCharacter::AttackComplete()
+void ABaseCharacter::Server_AttackComplete_Implementation()
 {
 	IsAttack = false;
 }
 
+void ABaseCharacter::AttackComplete()
+{
+	Server_AttackComplete();
+}
+
+void ABaseCharacter::Server_Attack_Implementation()
+{
+	IsAttack = true;
+}
+
+void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABaseCharacter, IsAttack);
+}
