@@ -54,6 +54,19 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_Attack();
 
+	UFUNCTION(Server, Reliable)
+	void Server_StartTrace();
+
+	UFUNCTION(Server, Reliable)
+	void Server_EndTrace();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Reaction();
+
+	void StartTrace();
+	void SphereTracing();
+	void EndTrace();
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
 	UPROPERTY(EditAnywhere, Category = "Input")
@@ -74,7 +87,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, Replicated, Category = "Attack")
 	bool IsAttack = false;
 
+	UPROPERTY(EditAnywhere, Category = "Montage")
+	UAnimMontage* HitReaction;
 
+	FTimerHandle AttackHandle;
 private:
 	bool isServer = false;
 
@@ -84,4 +100,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArmComp;
 
+	UPROPERTY(EditAnywhere)
+	USceneComponent* PunchLocationComp;
 };
