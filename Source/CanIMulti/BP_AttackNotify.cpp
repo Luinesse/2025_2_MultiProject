@@ -3,6 +3,7 @@
 
 #include "BP_AttackNotify.h"
 #include "BaseCharacter.h"
+#include "AttackComponent.h"
 
 void UBP_AttackNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
@@ -12,7 +13,7 @@ void UBP_AttackNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBas
 		ABaseCharacter* Player = Cast<ABaseCharacter>(MeshComp->GetOwner());
 
 		if (Player) {
-			Player->AttackComplete();
+			Player->FindComponentByClass<UAttackComponent>()->AttackComplete();
 		}
 	}
 }

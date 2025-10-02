@@ -7,8 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Net/UnrealNetwork.h"
-#include "MultiController.h"
+#include "AttackComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -25,6 +24,8 @@ ABaseCharacter::ABaseCharacter()
 	USkeletalMeshComponent* CharacterMesh = GetMesh();
 	PunchLocationComp = CreateDefaultSubobject<USceneComponent>(TEXT("PunchLocate"));
 	PunchLocationComp->SetupAttachment(CharacterMesh, TEXT("Punch"));
+
+	AttackManager = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -39,6 +40,7 @@ void ABaseCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
 }
 
 // Called every frame
@@ -120,88 +122,7 @@ void ABaseCharacter::Attack(const FInputActionInstance& Instance)
 		return;
 	}
 
-	if (!IsAttack) {
-		Server_Attack();
+	if (AttackManager) {
+		AttackManager->Server_Attack();
 	}
-}
-
-void ABaseCharacter::Server_AttackComplete_Implementation()
-{
-	IsAttack = false;
-}
-
-void ABaseCharacter::AttackComplete()
-{
-	Server_AttackComplete();
-}
-
-void ABaseCharacter::Server_Attack_Implementation()
-{
-	IsAttack = true;
-}
-
-void ABaseCharacter::Server_StartTrace_Implementation()
-{
-	GetWorldTimerManager().SetTimer(AttackHandle, this, &ABaseCharacter::SphereTracing, 0.01f, true);
-}
-
-void ABaseCharacter::Server_EndTrace_Implementation()
-{
-	GetWorldTimerManager().ClearTimer(AttackHandle);
-}
-
-void ABaseCharacter::Multicast_Reaction_Implementation()
-{
-	if (HitReaction) {
-		PlayAnimMontage(HitReaction);
-	}
-}
-
-void ABaseCharacter::StartTrace()
-{
-	Server_StartTrace();
-}
-
-void ABaseCharacter::SphereTracing()
-{
-	if (!HasAuthority()) {
-		return;
-	}
-
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
-
-	FHitResult HitResult;
-	bool HasHit = GetWorld()->SweepSingleByChannel(HitResult, PunchLocationComp->GetComponentLocation(), PunchLocationComp->GetComponentLocation(), FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(15.0f), QueryParams);
-	DrawDebugSphere(GetWorld(), PunchLocationComp->GetComponentLocation(), 15.0f, 5, FColor::Red);
-
-	if (HasHit) {
-		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 5, FColor::Green, true, 5.0f);
-		AActor* HitActor = HitResult.GetActor();
-		APawn* HitPawn = Cast<APawn>(HitActor);
-		if (HitPawn) {
-			AMultiController* VictimPC = Cast<AMultiController>(HitPawn->GetController());
-			if (VictimPC) {
-				VictimPC->Client_OnStunned();
-				FTimerHandle StunHandle;
-				GetWorld()->GetTimerManager().SetTimer(StunHandle, VictimPC, &AMultiController::Client_OnUnstunned, 1.67f, false);
-				ABaseCharacter* ReactActor = Cast<ABaseCharacter>(HitActor);
-				if (ReactActor) {
-					ReactActor->Multicast_Reaction();
-				}
-			}
-		}
-	}
-}
-
-void ABaseCharacter::EndTrace()
-{
-	Server_EndTrace();
-}
-
-void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ABaseCharacter, IsAttack);
 }

@@ -3,6 +3,7 @@
 
 #include "AttackNotifyState.h"
 #include "BaseCharacter.h"
+#include "AttackComponent.h"
 
 void UAttackNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
@@ -11,7 +12,7 @@ void UAttackNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequ
 	ABaseCharacter* UserPlayer = Cast<ABaseCharacter>(MeshComp->GetOwner());
 
 	if (UserPlayer) {
-		UserPlayer->StartTrace();
+		UserPlayer->FindComponentByClass<UAttackComponent>()->StartTrace();
 	}
 }
 
@@ -22,6 +23,6 @@ void UAttackNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequen
 	ABaseCharacter* UserPlayer = Cast<ABaseCharacter>(MeshComp->GetOwner());
 
 	if (UserPlayer) {
-		UserPlayer->EndTrace();
+		UserPlayer->FindComponentByClass<UAttackComponent>()->EndTrace();
 	}
 }

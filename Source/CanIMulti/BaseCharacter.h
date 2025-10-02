@@ -12,6 +12,7 @@ struct FInputActionInstance;
 
 class UCameraComponent;
 class USpringArmComponent;
+class UAttackComponent;
 
 UCLASS()
 class CANIMULTI_API ABaseCharacter : public ACharacter
@@ -46,28 +47,6 @@ public:
 	void Move(const FInputActionInstance& Instance);
 	void Look(const FInputActionInstance& Instance);
 	void Attack(const FInputActionInstance& Instance);
-	void AttackComplete();
-
-	UFUNCTION(Server, Reliable)
-	void Server_AttackComplete();
-
-	UFUNCTION(Server, Reliable)
-	void Server_Attack();
-
-	UFUNCTION(Server, Reliable)
-	void Server_StartTrace();
-
-	UFUNCTION(Server, Reliable)
-	void Server_EndTrace();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_Reaction();
-
-	void StartTrace();
-	void SphereTracing();
-	void EndTrace();
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
@@ -84,13 +63,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* AttackAction;
 
-	UPROPERTY(BlueprintReadWrite, Replicated, Category = "Attack")
-	bool IsAttack = false;
+	UPROPERTY(EditAnywhere)
+	USceneComponent* PunchLocationComp;
 
-	UPROPERTY(EditAnywhere, Category = "Montage")
-	UAnimMontage* HitReaction;
-
-	FTimerHandle AttackHandle;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UAttackComponent* AttackManager;
 private:
 	bool isServer = false;
 
@@ -99,7 +76,4 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArmComp;
-
-	UPROPERTY(EditAnywhere)
-	USceneComponent* PunchLocationComp;
 };
