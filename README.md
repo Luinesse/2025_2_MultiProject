@@ -20,3 +20,9 @@
 
 ## 2025.09.22
 - RPC Attack Notify Synchronize (멀티플레이 환경에서 공격 애니메이션 동기화 수행)
+
+## 2025.09.28
+- Sphere Trace & Montage Sync (서버에서 스피어 트레이싱 수행, 애니메이션 몽타주 동기화)
+
+## 2025.10.02
+- Composition (공격부분 AttackComponent 로 분리)
