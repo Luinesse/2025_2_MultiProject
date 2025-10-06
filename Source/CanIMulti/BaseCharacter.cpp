@@ -8,6 +8,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "AttackComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "GrabComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -26,6 +28,11 @@ ABaseCharacter::ABaseCharacter()
 	PunchLocationComp->SetupAttachment(CharacterMesh, TEXT("Punch"));
 
 	AttackManager = CreateDefaultSubobject<UAttackComponent>(TEXT("AttackComponent"));
+
+	GrabComponent = CreateDefaultSubobject<UGrabComponent>(TEXT("GrabComponent"));
+	GrabComponent->SetupAttachment(SpringArmComp);
+
+	PhysicsHandleComponent = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandleComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +69,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Move);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Look);
 		Input->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Attack);
+		Input->BindAction(GrabAction, ETriggerEvent::Triggered, GrabComponent, &UGrabComponent::Grab);
+		Input->BindAction(GrabAction, ETriggerEvent::Completed, GrabComponent, &UGrabComponent::Release);
 	}
 }
 

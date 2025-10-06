@@ -13,6 +13,8 @@ struct FInputActionInstance;
 class UCameraComponent;
 class USpringArmComponent;
 class UAttackComponent;
+class UGrabComponent;
+class UPhysicsHandleComponent;
 
 UCLASS()
 class CANIMULTI_API ABaseCharacter : public ACharacter
@@ -63,11 +65,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* AttackAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* GrabAction;
+
 	UPROPERTY(EditAnywhere)
 	USceneComponent* PunchLocationComp;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UAttackComponent* AttackManager;
+
+	UPROPERTY(EditAnywhere)
+	UGrabComponent* GrabComponent;
 private:
 	bool isServer = false;
 
@@ -76,4 +84,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArmComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UPhysicsHandleComponent* PhysicsHandleComponent;
 };
