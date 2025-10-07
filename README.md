@@ -26,3 +26,6 @@
 
 ## 2025.10.02
 - Composition (공격부분 AttackComponent 로 분리)
+
+## 2025.10.06
+- Grab Component & Sync (PhysicsHandle 을 통한 물건 잡기 및 서버 내 동기화)
