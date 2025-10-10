@@ -82,7 +82,6 @@ void UGrabComponent::Server_Release_Implementation()
 		return;
 	}
 
-	UPrimitiveComponent* GrabbedComp = PhysicsHandle->GetGrabbedComponent();
 	PhysicsHandle->ReleaseComponent();
 }
 

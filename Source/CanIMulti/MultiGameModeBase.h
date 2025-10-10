@@ -14,4 +14,13 @@ class CANIMULTI_API AMultiGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	UFUNCTION()
+	void PlayerDied(AController* PlayerController);
+
+private:
+	void RespawnPlayer(AController* PlayerController);
 };

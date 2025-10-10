@@ -10,6 +10,7 @@
 #include "AttackComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "GrabComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -134,4 +135,18 @@ void ABaseCharacter::Attack(const FInputActionInstance& Instance)
 	if (AttackManager) {
 		AttackManager->Server_Attack();
 	}
+}
+
+void ABaseCharacter::Multicast_PlayerDeathMontage_Implementation()
+{
+	if (DeathMontage) {
+		PlayAnimMontage(DeathMontage);
+	}
+}
+
+void ABaseCharacter::HandleDestruction()
+{
+	Multicast_PlayerDeathMontage();
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

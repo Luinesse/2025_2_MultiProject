@@ -49,6 +49,11 @@ public:
 	void Move(const FInputActionInstance& Instance);
 	void Look(const FInputActionInstance& Instance);
 	void Attack(const FInputActionInstance& Instance);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlayerDeathMontage();
+
+	void HandleDestruction();
 public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
@@ -87,4 +92,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UPhysicsHandleComponent* PhysicsHandleComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* DeathMontage;
 };
