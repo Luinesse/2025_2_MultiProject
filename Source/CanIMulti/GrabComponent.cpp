@@ -24,7 +24,6 @@ void UGrabComponent::BeginPlay()
 }
 
 
-// Called every frame
 void UGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

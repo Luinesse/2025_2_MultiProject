@@ -147,6 +147,4 @@ void ABaseCharacter::Multicast_PlayerDeathMontage_Implementation()
 void ABaseCharacter::HandleDestruction()
 {
 	Multicast_PlayerDeathMontage();
-
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

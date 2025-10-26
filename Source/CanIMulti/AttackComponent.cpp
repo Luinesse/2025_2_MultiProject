@@ -15,7 +15,8 @@ UAttackComponent::UAttackComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
-	SetIsReplicated(true);
+	//SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 }
 
 

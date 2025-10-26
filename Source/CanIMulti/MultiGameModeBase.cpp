@@ -42,7 +42,7 @@ void AMultiGameModeBase::PlayerDied(AController* PlayerController)
 	FTimerDelegate RespawnDelegate;
 
 	RespawnDelegate.BindUObject(this, &AMultiGameModeBase::RespawnPlayer, PlayerController);
-	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, 3.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, 1.0f, false);
 }
 
 void AMultiGameModeBase::RespawnPlayer(AController* PlayerController)

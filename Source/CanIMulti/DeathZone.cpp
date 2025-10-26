@@ -14,6 +14,9 @@ ADeathZone::ADeathZone()
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	RootComponent = MeshComp;
 
+	CollisionComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Collision Component"));
+	CollisionComp->SetupAttachment(RootComponent);
+
 	MeshComp->SetGenerateOverlapEvents(true);
 }
 
