@@ -29,3 +29,6 @@
 
 ## 2025.10.06
 - Grab Component & Sync (PhysicsHandle 을 통한 물건 잡기 및 서버 내 동기화)
+
+## 2025.10.10
+- Death Zone (닿으면 죽는 공간 구현 및 리스폰)
