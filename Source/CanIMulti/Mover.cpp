@@ -31,24 +31,31 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 
 	// ...
 
-	FVector CurrentLocation = GetOwner()->GetActorLocation();
-	FVector TargetLocation = OriginalLocation + MoveOffset;
-	float Speed = FVector::Distance(OriginalLocation, TargetLocation) / MoveTime;
-
-	FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaTime, Speed);
-
-	if (ShouldMove) {
-		GetOwner()->SetActorLocation(NewLocation);
-		UE_LOG(LogTemp, Display, TEXT("Moving !!"));
+	FVector TargetLocation;
+	if (ActiveTriggerCount > 0) {
+		TargetLocation = OriginalLocation + MoveOffset;
 	}
 	else {
-		GetOwner()->SetActorLocation(FMath::VInterpConstantTo(CurrentLocation, OriginalLocation, DeltaTime, Speed));
-		UE_LOG(LogTemp, Display, TEXT("Not Moving !!"));
+		TargetLocation = OriginalLocation;
+	}
+
+	FVector CurrentLocation = GetOwner()->GetActorLocation();
+	float Speed = MoveTime > 0 ? FVector::Distance(OriginalLocation, OriginalLocation + MoveOffset) / MoveTime : 0.0f;
+
+	if (!CurrentLocation.Equals(TargetLocation, 1.0f)) {
+		GetOwner()->SetActorLocation(FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaTime, Speed));
 	}
 }
 
-void UMover::setShouldMove(bool isMove)
+void UMover::AddActiveTrigger()
 {
-	ShouldMove = isMove;
+	ActiveTriggerCount++;
+}
+
+void UMover::RemoveActiveTrigger()
+{
+	if (ActiveTriggerCount > 0) {
+		ActiveTriggerCount--;
+	}
 }
 

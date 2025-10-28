@@ -13,39 +13,26 @@ UTriggerComponent::UTriggerComponent()
 void UTriggerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OnComponentBeginOverlap.AddDynamic(this, &UTriggerComponent::OnOverlapBegin);
+	OnComponentEndOverlap.AddDynamic(this, &UTriggerComponent::OnOverlapEnd);
 }
 
-void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UTriggerComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	AActor* FindActor = GetAcceptableActor();
-
-	if (FindActor) {
-		Mover->setShouldMove(true);
-		UE_LOG(LogTemp, Display, TEXT("Check !!"));
+	if (Mover && OtherActor && OtherActor->ActorHasTag(AcceptableActorTag)) {
+		Mover->AddActiveTrigger();
 	}
-	else {
-		Mover->setShouldMove(false);
-		UE_LOG(LogTemp, Display, TEXT("UnCheck !!"));
+}
+
+void UTriggerComponent::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (Mover && OtherActor && OtherActor->ActorHasTag(AcceptableActorTag)) {
+		Mover->RemoveActiveTrigger();
 	}
 }
 
 void UTriggerComponent::SetMover(UMover* NewMover)
 {
 	Mover = NewMover;
-}
-
-AActor* UTriggerComponent::GetAcceptableActor() const
-{
-	TArray<AActor*> Actors;
-	GetOverlappingActors(Actors);
-
-	for (AActor* Actor : Actors) {
-		if (Actor->ActorHasTag(AcceptableActorTag)) {
-			return Actor;
-		}
-	}
-
-	return nullptr;
 }
