@@ -20,7 +20,6 @@ protected:
 public:
 	UFUNCTION()
 	void PlayerDied(AController* PlayerController);
-
 private:
 	void RespawnPlayer(AController* PlayerController);
 };
