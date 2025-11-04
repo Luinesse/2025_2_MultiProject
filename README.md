@@ -41,3 +41,6 @@
 
 ## 2025.11.03
 - Create Gimmick 2 (플레이어와 히트 시, 기믹 해제)
+
+## 2025.11.04
+- Revise Hit Logic & Replicated Settings (충돌 로직 수정, HitTrigger와 SpawnKey의 Replicated 세팅)
