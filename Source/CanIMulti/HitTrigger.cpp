@@ -3,6 +3,7 @@
 
 #include "HitTrigger.h"
 #include "BaseCharacter.h"
+#include "Components/PointLightComponent.h"
 
 // Sets default values
 AHitTrigger::AHitTrigger()
@@ -12,6 +13,13 @@ AHitTrigger::AHitTrigger()
 
 	FireHandle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FireHandle"));
 	FireHandle->SetupAttachment(RootComponent);
+
+	ActiveLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("ActiveLight"));
+	ActiveLight->SetupAttachment(FireHandle);
+
+	ActiveLight->SetIntensity(0.0f);
+
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -31,12 +39,21 @@ void AHitTrigger::Tick(float DeltaTime)
 
 void AHitTrigger::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (HasAuthority()) {
+	if (HasAuthority() && !isActive) {
 		ABaseCharacter* PlayerCharacter = Cast<ABaseCharacter>(OtherActor);
 
 		if (PlayerCharacter) {
 			isOn = true;
+			isActive = true;
+
+			Multicast_TurnOnLight();
+
 			OnHitTriggerChecked.Broadcast(isOn);
 		}
 	}
+}
+
+void AHitTrigger::Multicast_TurnOnLight_Implementation()
+{
+	ActiveLight->SetIntensity(5000.0f);
 }

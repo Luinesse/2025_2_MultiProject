@@ -4,6 +4,7 @@
 #include "SpawnKey.h"
 #include "HitTrigger.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASpawnKey::ASpawnKey()
@@ -15,6 +16,8 @@ ASpawnKey::ASpawnKey()
 	KeyMesh->SetupAttachment(RootComponent);
 
 	KeyMesh->SetIsReplicated(true);
+
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -46,20 +49,30 @@ void ASpawnKey::Tick(float DeltaTime)
 
 void ASpawnKey::TurnOn(bool isOn)
 {
-	if (CurrentCount >= 0 && CurrentCount < MaxCount) {
-		if (isOn) {
-			CurrentCount++;
-		}
-		else {
-			CurrentCount--;
+	if (HasAuthority()) {
+		if (CurrentCount >= 0 && CurrentCount < MaxCount) {
+			if (isOn) {
+				CurrentCount++;
+			}
 		}
 	}
 
+	OnRep_CurrentCount();
+}
+
+void ASpawnKey::OnRep_CurrentCount()
+{
 	if (CurrentCount == MaxCount) {
 		KeyMesh->SetVisibility(true);
 	}
 	else {
 		KeyMesh->SetVisibility(false);
 	}
+}
+
+void ASpawnKey::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASpawnKey, CurrentCount);
 }
 

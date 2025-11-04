@@ -8,6 +8,8 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHitTriggerChecked, bool);
 
+class UPointLightComponent;
+
 UCLASS()
 class CANIMULTI_API AHitTrigger : public AActor
 {
@@ -30,8 +32,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Mesh")
 	UStaticMeshComponent* FireHandle;
 
+	UPROPERTY(EditAnywhere, Category = "Light")
+	UPointLightComponent* ActiveLight;
+
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_TurnOnLight();
+
 	bool isOn = false;
+	bool isActive = false;
 };

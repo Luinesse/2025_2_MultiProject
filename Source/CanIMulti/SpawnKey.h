@@ -33,6 +33,11 @@ private:
 	UPROPERTY()
 	int MaxCount;
 
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentCount)
 	int CurrentCount = 0;
+
+	UFUNCTION()
+	void OnRep_CurrentCount();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
