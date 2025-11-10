@@ -44,3 +44,6 @@
 
 ## 2025.11.04
 - Revise Hit Logic & Replicated Settings (충돌 로직 수정, HitTrigger와 SpawnKey의 Replicated 세팅)
+
+## 2025.11.10
+- Create Gimmick 3 Demo (세번째 기믹 제작. 특정 순서로 발판을 밟을 시 기믹해제)
