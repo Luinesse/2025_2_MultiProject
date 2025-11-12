@@ -5,6 +5,9 @@
 #include "HitTrigger.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/BoxComponent.h"
+#include "BaseCharacter.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 ASpawnKey::ASpawnKey()
@@ -16,6 +19,11 @@ ASpawnKey::ASpawnKey()
 	KeyMesh->SetupAttachment(RootComponent);
 
 	KeyMesh->SetIsReplicated(true);
+
+	TriggerPoint = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger"));
+	TriggerPoint->SetupAttachment(RootComponent);
+
+	TriggerPoint->SetIsReplicated(true);
 
 	bReplicates = true;
 }
@@ -37,6 +45,9 @@ void ASpawnKey::BeginPlay()
 		}
 	}
 
+	TriggerPoint->OnComponentBeginOverlap.AddDynamic(this, &ASpawnKey::OnBeginOverlap);
+	TriggerPoint->OnComponentEndOverlap.AddDynamic(this, &ASpawnKey::OnEndOverlap);
+
 	KeyMesh->SetVisibility(false);
 }
 
@@ -45,6 +56,29 @@ void ASpawnKey::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ASpawnKey::ShowHintWidget()
+{
+	if (HintWidget && DisplayedWidget == nullptr) {
+		APlayerController* UserController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+		if (UserController) {
+			DisplayedWidget = CreateWidget<UUserWidget>(UserController, HintWidget);
+
+			if (DisplayedWidget) {
+				DisplayedWidget->AddToViewport();
+			}
+		}
+	}
+}
+
+void ASpawnKey::HideHintWidget()
+{
+	if (DisplayedWidget) {
+		DisplayedWidget->RemoveFromParent();
+		DisplayedWidget = nullptr;
+	}
 }
 
 void ASpawnKey::TurnOn(bool isOn)
@@ -64,9 +98,26 @@ void ASpawnKey::OnRep_CurrentCount()
 {
 	if (CurrentCount == MaxCount) {
 		KeyMesh->SetVisibility(true);
+		isActive = true;
 	}
 	else {
 		KeyMesh->SetVisibility(false);
+	}
+}
+
+void ASpawnKey::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	ABaseCharacter* UserCharacter = Cast<ABaseCharacter>(OtherActor);
+	if (UserCharacter && UserCharacter->IsLocallyControlled() && isActive) {
+		ShowHintWidget();
+	}
+}
+
+void ASpawnKey::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	ABaseCharacter* UserCharacter = Cast<ABaseCharacter>(OtherActor);
+	if (UserCharacter && UserCharacter->IsLocallyControlled() && isActive) {
+		HideHintWidget();
 	}
 }
 

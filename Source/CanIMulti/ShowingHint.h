@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WidgetInterface.h"
-#include "SpawnKey.generated.h"
+#include "ShowingHint.generated.h"
 
 class UBoxComponent;
 class UUserWidget;
 
 UCLASS()
-class CANIMULTI_API ASpawnKey : public AActor, public IWidgetInterface
+class CANIMULTI_API AShowingHint : public AActor, public IWidgetInterface
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ASpawnKey();
+	AShowingHint();
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,27 +29,10 @@ public:
 
 	virtual void ShowHintWidget() override;
 	virtual void HideHintWidget() override;
+
 private:
-	UPROPERTY(EditAnywhere, Category = "Mesh")
-	UStaticMeshComponent* KeyMesh;
-
-	UPROPERTY(EditAnywhere, Category = "Hint")
+	UPROPERTY(EditAnywhere, Category = "Widget")
 	UBoxComponent* TriggerPoint;
-
-	UPROPERTY(EditAnywhere, Category = "Hint")
-	TSubclassOf<UUserWidget> HintWidget;
-
-	UFUNCTION()
-	void TurnOn(bool isOn);
-
-	UPROPERTY()
-	int MaxCount;
-
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentCount)
-	int CurrentCount = 0;
-
-	UFUNCTION()
-	void OnRep_CurrentCount();
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -57,9 +40,8 @@ private:
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	bool isActive = false;
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<UUserWidget> HintWidget;
 
 	UPROPERTY()
 	UUserWidget* DisplayedWidget;
