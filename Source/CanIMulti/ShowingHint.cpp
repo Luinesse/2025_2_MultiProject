@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 #include "BaseCharacter.h"
+#include "DisplayWidgetComponent.h"
 
 // Sets default values
 AShowingHint::AShowingHint()
@@ -17,6 +18,8 @@ AShowingHint::AShowingHint()
 	TriggerPoint->SetupAttachment(RootComponent);
 
 	TriggerPoint->SetIsReplicated(true);
+
+	HintDraw = CreateDefaultSubobject<UDisplayWidgetComponent>(TEXT("HintDraw"));
 
 	bReplicates = true;
 }
@@ -37,34 +40,11 @@ void AShowingHint::Tick(float DeltaTime)
 
 }
 
-void AShowingHint::ShowHintWidget()
-{
-	if (HintWidget && DisplayedWidget == nullptr) {
-		APlayerController* UserController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-		if (UserController) {
-			DisplayedWidget = CreateWidget<UUserWidget>(UserController, HintWidget);
-
-			if (DisplayedWidget) {
-				DisplayedWidget->AddToViewport();
-			}
-		}
-	}
-}
-
-void AShowingHint::HideHintWidget()
-{
-	if (DisplayedWidget) {
-		DisplayedWidget->RemoveFromParent();
-		DisplayedWidget = nullptr;
-	}
-}
-
 void AShowingHint::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ABaseCharacter* UserCharacter = Cast<ABaseCharacter>(OtherActor);
 	if (UserCharacter && UserCharacter->IsLocallyControlled()) {
-		ShowHintWidget();
+		HintDraw->ShowHintWidget();
 	}
 }
 
@@ -72,7 +52,7 @@ void AShowingHint::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
 {
 	ABaseCharacter* UserCharacter = Cast<ABaseCharacter>(OtherActor);
 	if (UserCharacter && UserCharacter->IsLocallyControlled()) {
-		HideHintWidget();
+		HintDraw->HideHintWidget();
 	}
 }
 

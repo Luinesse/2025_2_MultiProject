@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WidgetInterface.h"
 #include "SpawnKey.generated.h"
 
 class UBoxComponent;
 class UUserWidget;
+class UDisplayWidgetComponent;
 
 UCLASS()
-class CANIMULTI_API ASpawnKey : public AActor, public IWidgetInterface
+class CANIMULTI_API ASpawnKey : public AActor
 {
 	GENERATED_BODY()
 	
@@ -26,9 +26,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void ShowHintWidget() override;
-	virtual void HideHintWidget() override;
 private:
 	UPROPERTY(EditAnywhere, Category = "Mesh")
 	UStaticMeshComponent* KeyMesh;
@@ -37,7 +34,7 @@ private:
 	UBoxComponent* TriggerPoint;
 
 	UPROPERTY(EditAnywhere, Category = "Hint")
-	TSubclassOf<UUserWidget> HintWidget;
+	UDisplayWidgetComponent* HintDraw;
 
 	UFUNCTION()
 	void TurnOn(bool isOn);
@@ -61,6 +58,4 @@ private:
 
 	bool isActive = false;
 
-	UPROPERTY()
-	UUserWidget* DisplayedWidget;
 };

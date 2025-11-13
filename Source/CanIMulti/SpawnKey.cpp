@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "BaseCharacter.h"
 #include "Blueprint/UserWidget.h"
+#include "DisplayWidgetComponent.h"
 
 // Sets default values
 ASpawnKey::ASpawnKey()
@@ -24,6 +25,8 @@ ASpawnKey::ASpawnKey()
 	TriggerPoint->SetupAttachment(RootComponent);
 
 	TriggerPoint->SetIsReplicated(true);
+
+	HintDraw = CreateDefaultSubobject<UDisplayWidgetComponent>(TEXT("HintDraw"));
 
 	bReplicates = true;
 }
@@ -58,29 +61,6 @@ void ASpawnKey::Tick(float DeltaTime)
 
 }
 
-void ASpawnKey::ShowHintWidget()
-{
-	if (HintWidget && DisplayedWidget == nullptr) {
-		APlayerController* UserController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-		if (UserController) {
-			DisplayedWidget = CreateWidget<UUserWidget>(UserController, HintWidget);
-
-			if (DisplayedWidget) {
-				DisplayedWidget->AddToViewport();
-			}
-		}
-	}
-}
-
-void ASpawnKey::HideHintWidget()
-{
-	if (DisplayedWidget) {
-		DisplayedWidget->RemoveFromParent();
-		DisplayedWidget = nullptr;
-	}
-}
-
 void ASpawnKey::TurnOn(bool isOn)
 {
 	if (HasAuthority()) {
@@ -109,7 +89,7 @@ void ASpawnKey::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
 {
 	ABaseCharacter* UserCharacter = Cast<ABaseCharacter>(OtherActor);
 	if (UserCharacter && UserCharacter->IsLocallyControlled() && isActive) {
-		ShowHintWidget();
+		HintDraw->ShowHintWidget();
 	}
 }
 
@@ -117,7 +97,7 @@ void ASpawnKey::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 {
 	ABaseCharacter* UserCharacter = Cast<ABaseCharacter>(OtherActor);
 	if (UserCharacter && UserCharacter->IsLocallyControlled() && isActive) {
-		HideHintWidget();
+		HintDraw->HideHintWidget();
 	}
 }
 

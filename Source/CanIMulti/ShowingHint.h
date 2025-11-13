@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WidgetInterface.h"
 #include "ShowingHint.generated.h"
 
 class UBoxComponent;
 class UUserWidget;
+class UDisplayWidgetComponent;
 
 UCLASS()
-class CANIMULTI_API AShowingHint : public AActor, public IWidgetInterface
+class CANIMULTI_API AShowingHint : public AActor
 {
 	GENERATED_BODY()
 	
@@ -27,22 +27,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void ShowHintWidget() override;
-	virtual void HideHintWidget() override;
-
 private:
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	UBoxComponent* TriggerPoint;
+
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	UDisplayWidgetComponent* HintDraw;
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UPROPERTY(EditAnywhere, Category = "Widget")
-	TSubclassOf<UUserWidget> HintWidget;
-
-	UPROPERTY()
-	UUserWidget* DisplayedWidget;
 };
