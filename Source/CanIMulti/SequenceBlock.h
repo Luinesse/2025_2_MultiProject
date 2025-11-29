@@ -9,6 +9,7 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnOverlapChecked, int);
 
 class UBoxComponent;
+class URectLightComponent;
 
 UCLASS()
 class CANIMULTI_API ASequenceBlock : public AActor
@@ -40,8 +41,17 @@ private:
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* OverlapBox;
 
+	UPROPERTY(EditAnywhere)
+	URectLightComponent* ActiveLight;
+
 	bool isActive = false;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_TurnOnLight();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_TurnOffLight();
 };

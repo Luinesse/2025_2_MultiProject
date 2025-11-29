@@ -17,8 +17,12 @@ ASpawnBlockKey::ASpawnBlockKey()
 
 	ClearKey->SetIsReplicated(true);
 
+	ClearKey->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	ClearKey->SetVisibility(false);
 	ClearKey->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ClearKey->SetGenerateOverlapEvents(true);
+
+	KeyTagName = TEXT("Clear");
 
 	bReplicates = true;
 }
@@ -37,6 +41,10 @@ void ASpawnBlockKey::BeginPlay()
 			Block->OnOverlapChecked.AddUObject(this, &ASpawnBlockKey::CheckNum);
 			ManagedBlocks.Add(Block);
 		}
+	}
+
+	if (HasAuthority()) {
+		ClearKey->OnComponentBeginOverlap.AddDynamic(this, &ASpawnBlockKey::OnKeyOverlap);
 	}
 }
 
@@ -77,6 +85,28 @@ void ASpawnBlockKey::OnRep_CheckResult()
 		ClearKey->SetVisibility(true);
 		ClearKey->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}
+}
+
+void ASpawnBlockKey::OnKeyOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!HasAuthority())	return;
+	if (!IsGimmickClear)	return;
+
+	APawn* OverlappedPawn = Cast<APawn>(OtherActor);
+	if (!OverlappedPawn || !OverlappedPawn->IsPlayerControlled())	return;
+
+	for (auto Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator) {
+		APlayerController* PC = Iterator->Get();
+		if (PC) {
+			APawn* MyPawn = PC->GetPawn();
+			if (MyPawn) {
+				UE_LOG(LogTemp, Display, TEXT("Tag Set"));
+				MyPawn->Tags.AddUnique(KeyTagName);
+			}
+		}
+	}
+
+	Destroy();
 }
 
 void ASpawnBlockKey::ResetGimmick()

@@ -3,6 +3,7 @@
 
 #include "SequenceBlock.h"
 #include "Components/BoxComponent.h"
+#include "Components/RectLightComponent.h"
 #include "BaseCharacter.h"
 
 // Sets default values
@@ -16,6 +17,11 @@ ASequenceBlock::ASequenceBlock()
 
 	OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
 	OverlapBox->SetupAttachment(Block);
+
+	ActiveLight = CreateDefaultSubobject<URectLightComponent>(TEXT("ActiveLight"));
+	ActiveLight->SetupAttachment(Block);
+
+	ActiveLight->SetIntensity(0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -37,6 +43,7 @@ void ASequenceBlock::ResetBlock()
 {
 	if (HasAuthority()) {
 		isActive = false;
+		Multicast_TurnOffLight();
 	}
 }
 
@@ -47,7 +54,19 @@ void ASequenceBlock::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 		if (isCharacter) {
 			isActive = true;
 			OnOverlapChecked.Broadcast(myNumber);
+
+			Multicast_TurnOnLight();
 		}
 	}
+}
+
+void ASequenceBlock::Multicast_TurnOnLight_Implementation()
+{
+	ActiveLight->SetIntensity(5000.0f);
+}
+
+void ASequenceBlock::Multicast_TurnOffLight_Implementation()
+{
+	ActiveLight->SetIntensity(0.0f);
 }
 
