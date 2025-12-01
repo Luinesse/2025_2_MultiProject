@@ -31,6 +31,10 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 
 	// ...
 
+	if (GetOwner()->HasAuthority() == false) {
+		return;
+	}
+
 	FVector TargetLocation;
 	if (ActiveTriggerCount > 0) {
 		TargetLocation = OriginalLocation + MoveOffset;

@@ -6,6 +6,8 @@
 #include "DeathZone.h"
 #include "MultiController.h"
 #include "BaseCharacter.h"
+#include "ClearActor.h"
+#include "MultiGameState.h"
 
 void AMultiGameModeBase::BeginPlay()
 {
@@ -18,6 +20,16 @@ void AMultiGameModeBase::BeginPlay()
 		ADeathZone* DeathZone = Cast<ADeathZone>(ZoneActor);
 		if (DeathZone) {
 			DeathZone->OnPlayerEntered.AddUObject(this, &AMultiGameModeBase::PlayerDied);
+		}
+	}
+
+	TArray<AActor*> ClearZones;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AClearActor::StaticClass(), ClearZones);
+
+	for (AActor* Actor : ClearZones) {
+		AClearActor* Zone = Cast<AClearActor>(Actor);
+		if (Zone) {
+			Zone->OnLevelClear.AddUObject(this, &AMultiGameModeBase::ClearFunc);
 		}
 	}
 }
@@ -45,6 +57,10 @@ void AMultiGameModeBase::PlayerDied(AController* PlayerController)
 	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, 1.0f, false);
 }
 
+AMultiGameModeBase::AMultiGameModeBase()
+{
+}
+
 void AMultiGameModeBase::RespawnPlayer(AController* PlayerController)
 {
 	if (PlayerController) {
@@ -63,5 +79,23 @@ void AMultiGameModeBase::RespawnPlayer(AController* PlayerController)
 		if (MyPC) {
 			MyPC->Client_OnUnstunned();
 		}
+	}
+}
+
+void AMultiGameModeBase::ClearFunc()
+{
+	AMultiGameState* GS = GetGameState<AMultiGameState>();
+	if (GS) {
+		GS->Multicast_ShowClearWidget();
+	}
+
+	GetWorldTimerManager().SetTimer(LevelTravelTimer, this, &AMultiGameModeBase::TravelLobby, 5.0f, false);
+}
+
+void AMultiGameModeBase::TravelLobby()
+{
+	UWorld* World = GetWorld();
+	if (World) {
+		World->ServerTravel("/Game/ConferenceRoom/Levels/L_Showcase?listen");
 	}
 }

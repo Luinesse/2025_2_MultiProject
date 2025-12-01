@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "MultiGameModeBase.generated.h"
 
+class UDisplayWidgetComponent;
+
 /**
  * 
  */
@@ -20,6 +22,15 @@ protected:
 public:
 	UFUNCTION()
 	void PlayerDied(AController* PlayerController);
+
+	AMultiGameModeBase();
 private:
 	void RespawnPlayer(AController* PlayerController);
+
+	FTimerHandle LevelTravelTimer;
+
+	UFUNCTION()
+	void ClearFunc();
+
+	void TravelLobby();
 };

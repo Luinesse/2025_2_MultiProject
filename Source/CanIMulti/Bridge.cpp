@@ -14,6 +14,9 @@ ABridge::ABridge()
 
 	CollisionLocation = CreateDefaultSubobject<USceneComponent>(TEXT("CollisionLocation"));
 	CollisionLocation->SetupAttachment(RootComponent);
+
+	bReplicates = true;
+	SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
